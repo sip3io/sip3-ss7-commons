@@ -1,0 +1,13 @@
+#! Soсket
+socket:
+  priAddr: 127.0.0.1
+  secAddr: 127.0.0.1
+  stp:
+    - lPort: 2901
+      rAddr: 127.0.0.1
+      rPort: 2905
+      rPC: 2308
+  pcApp: 42
+  gtVrt: "*"
+  gtApp: ["19000000001", "19000000002"]
+  ssnApp: 146
