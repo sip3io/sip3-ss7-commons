@@ -22,6 +22,8 @@ import io.sip3.commons.vertx.util.localRequest
 import io.sip3.ss7.commons.Routes
 import io.sip3.ss7.commons.domain.SccpMessage
 import io.sip3.ss7.commons.util.SccpAddressFactory
+import io.sip3.ss7.commons.util.patchLocalFsm
+import io.sip3.ss7.commons.util.patchPeerFsm
 import io.vertx.core.AbstractVerticle
 import io.vertx.core.json.JsonObject
 import mu.KotlinLogging
@@ -31,9 +33,7 @@ import org.mobicents.protocols.sctp.ManagementImpl
 import org.mobicents.protocols.ss7.m3ua.ExchangeType
 import org.mobicents.protocols.ss7.m3ua.Functionality
 import org.mobicents.protocols.ss7.m3ua.M3UAManagement
-import org.mobicents.protocols.ss7.m3ua.impl.AsImpl
 import org.mobicents.protocols.ss7.m3ua.impl.M3UAManagementImpl
-import org.mobicents.protocols.ss7.m3ua.impl.TransitionState
 import org.mobicents.protocols.ss7.mtp.Mtp3PausePrimitive
 import org.mobicents.protocols.ss7.mtp.Mtp3ResumePrimitive
 import org.mobicents.protocols.ss7.mtp.Mtp3UserPart
@@ -127,17 +127,15 @@ class Socket : AbstractVerticle(), SccpListener {
                 val lPort = stp.getInteger("lPort")
                 val rPc = stp.getInteger("rPC")
 
-                m3ua.createAspFactory(ASP_NAME + "_$lPort", ASSOCIATION_NAME + "_$lPort", true)
-                val `as` = m3ua.createAs(AS_NAME + "_$lPort", Functionality.AS, ExchangeType.SE, null, null, null, 1, null)
-                (`as` as AsImpl).apply {
-                    //  If the ASP receives an ASP Inactive Ack without
-                    //  having sent an ASP Inactive message, the ASP should now consider
-                    //  itself to be in the ASP-INACTIVE state. If the ASP was previously in
-                    //  the ASP-ACTIVE state, the ASP should then initiate procedures to
-                    //  return itself to its previous state.
-                    localFSM.createTransition(TransitionState.ASP_INACTIVE_ACK, "ACTIVE", "INACTIVE");
+                m3ua.createAspFactory(ASP_NAME + "_$lPort", ASSOCIATION_NAME + "_$lPort", false)
+                m3ua.createAs(AS_NAME + "_$lPort", Functionality.AS, ExchangeType.SE, null, null, null, 1, null).apply {
+                    // This patch will help AS to recover in case of blocked M3UA links
+                    patchPeerFsm()
                 }
-                m3ua.assignAspToAs(AS_NAME + "_$lPort", ASP_NAME + "_$lPort")
+                m3ua.assignAspToAs(AS_NAME + "_$lPort", ASP_NAME + "_$lPort").apply {
+                    // This patch will help ASP to recover in case of blocked M3UA links
+                    patchLocalFsm()
+                }
                 m3ua.addRoute(rPc, pcApp, -1, AS_NAME + "_$lPort")
             }
 
