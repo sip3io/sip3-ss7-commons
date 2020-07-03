@@ -2,6 +2,8 @@
 
 **SIP3 SS7 Commons** is a set of common classes used in multiple SIP3 SS7 related projects.
 
+This project is a Kotlin wrapper over [jSS7](https://github.com/RestComm/jss7) project from Telestax.
+
 ## 1. Prerequsites
 
 Before starting with `sip3-ss7-commons`, make sure you have installed:
