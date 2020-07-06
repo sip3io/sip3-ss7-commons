@@ -165,17 +165,18 @@ class Socket : AbstractVerticle(), SccpListener {
                 sccp.router.apply {
                     addMtp3ServiceAccessPoint(lPort, 1, pcApp, NETWORK_INDICATOR, 0)
                     addMtp3Destination(lPort, rPc, rPc, rPc, 0, 255, 255)
-
-                    val sccpAddressVrt = config.getString("gtVrt")?.let { SccpAddressFactory.create(it, pcApp) }
-                    config.getJsonArray("gtApp")
-                            .map { it as String }
-                            .map { SccpAddressFactory.create(it, pcApp) }
-                            .forEachIndexed { i, sccpAddressApp ->
-                                addRoutingAddress(i, sccpAddressApp)
-                                addRule(i, RuleType.SOLITARY, LoadSharingAlgorithm.Undefined, OriginationType.ALL, sccpAddressVrt, "K", i, -1, null, 0)
-                            }
                 }
                 sccp.sccpResource.addRemoteSpc(lPort, rPc, 0, 0)
+            }
+            sccp.router.apply {
+                val sccpAddressVrt = config.getString("gtVrt")?.let { SccpAddressFactory.create(it, pcApp) }
+                config.getJsonArray("gtApp")
+                        .map { it as String }
+                        .map { SccpAddressFactory.create(it, pcApp) }
+                        .forEachIndexed { i, sccpAddressApp ->
+                            addRoutingAddress(i, sccpAddressApp)
+                            addRule(i, RuleType.SOLITARY, LoadSharingAlgorithm.Undefined, OriginationType.ALL, sccpAddressVrt, "K", i, -1, null, 0)
+                        }
             }
 
             // Start ASP
