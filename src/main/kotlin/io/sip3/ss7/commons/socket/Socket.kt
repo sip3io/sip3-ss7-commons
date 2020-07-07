@@ -22,6 +22,7 @@ import io.sip3.commons.vertx.util.localRequest
 import io.sip3.ss7.commons.Routes
 import io.sip3.ss7.commons.domain.SccpMessage
 import io.sip3.ss7.commons.util.SccpAddressFactory
+import io.sip3.ss7.commons.util.patchLinksetSelection
 import io.sip3.ss7.commons.util.patchLocalFsm
 import io.sip3.ss7.commons.util.patchPeerFsm
 import io.vertx.core.AbstractVerticle
@@ -120,6 +121,7 @@ class Socket : AbstractVerticle(), SccpListener {
             }.apply {
                 transportManagement = sctp
                 start()
+                patchLinksetSelection()
                 removeAllResourses()
             }
             config.getJsonArray("stp")?.forEach { stp ->
