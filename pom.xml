@@ -11,7 +11,7 @@
     <parent>
         <groupId>io.sip3</groupId>
         <artifactId>sip3-parent</artifactId>
-        <version>2020.1.1</version>
+        <version>2020.2.1</version>
     </parent>
 
     <properties>
@@ -24,7 +24,7 @@
         <dependency>
             <groupId>io.sip3.commons</groupId>
             <artifactId>sip3-commons</artifactId>
-            <version>2020.1.1</version>
+            <version>2020.2.1</version>
         </dependency>
 
         <!-- SS7 -->
@@ -191,7 +191,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.1</version>
+                <version>2.22.2</version>
             </plugin>
         </plugins>
     </build>
