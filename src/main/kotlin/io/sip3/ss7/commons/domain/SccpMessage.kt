@@ -19,8 +19,8 @@ package io.sip3.ss7.commons.domain
 class SccpMessage {
 
     var sls = 0
-    var opc = 0
     var dpc = 0
+    var opc = 0
     var ssn = 0
 
     lateinit var gtCdpa: String
@@ -32,6 +32,6 @@ class SccpMessage {
     }
 
     override fun toString(): String {
-        return "SccpMessage(sls=$sls, opc=$opc, dpc=$dpc, ssn=$ssn, gtCdpa='$gtCdpa', gtCgpa='$gtCgpa', tcapMessage=$tcapMessage)"
+        return "SccpMessage(sls=$sls, dpc=$dpc, opc=$opc, ssn=$ssn, gtCdpa='$gtCdpa', gtCgpa='$gtCgpa', tcapMessage=$tcapMessage)"
     }
 }
