@@ -21,6 +21,7 @@ class SccpMessage {
     var sls = 0
     var opc = 0
     var dpc = 0
+    var ssn = 0
 
     lateinit var gtCdpa: String
     lateinit var gtCgpa: String
@@ -31,6 +32,6 @@ class SccpMessage {
     }
 
     override fun toString(): String {
-        return "SccpMessage(sls=$sls, opc=$opc, dpc=$dpc, gtCdpa='$gtCdpa', gtCgpa='$gtCgpa', tcapMessage=$tcapMessage)"
+        return "SccpMessage(sls=$sls, opc=$opc, dpc=$dpc, ssn=$ssn, gtCdpa='$gtCdpa', gtCgpa='$gtCgpa', tcapMessage=$tcapMessage)"
     }
 }

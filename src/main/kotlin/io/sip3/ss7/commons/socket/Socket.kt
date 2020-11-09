@@ -58,8 +58,6 @@ class Socket : AbstractVerticle(), SccpListener {
         const val NETWORK_INDICATOR = 3
     }
 
-    private var ssnApp = 146
-
     private lateinit var sctp: Management
     private lateinit var m3ua: M3UAManagement
     private lateinit var sccp: SccpStack
@@ -68,10 +66,6 @@ class Socket : AbstractVerticle(), SccpListener {
     private val sccpMessagesSent = Metrics.counter("sccp_messages_sent")
 
     override fun start() {
-        config().getJsonObject("socket")?.getInteger("ssnApp")?.let {
-            ssnApp = it
-        }
-
         try {
             open()
         } catch (e: Exception) {
@@ -189,7 +183,11 @@ class Socket : AbstractVerticle(), SccpListener {
                 m3ua.startAsp(ASP_NAME + "_$lPort")
             }
 
-            sccp.sccpProvider.registerSccpListener(ssnApp, this)
+            config.getJsonArray("ssnApp")
+                    .map { it as Int }
+                    .forEach { ssn ->
+                        sccp.sccpProvider.registerSccpListener(ssn, this)
+                    }
         }
 
         logger.info { "Stack configuration checked" }
@@ -202,6 +200,7 @@ class Socket : AbstractVerticle(), SccpListener {
             sls = message.sls
             opc = message.incomingOpc
             dpc = message.incomingDpc
+            ssn = message.originLocalSsn
             gtCdpa = message.calledPartyAddress
                     .globalTitle
                     .digits
@@ -239,7 +238,7 @@ class Socket : AbstractVerticle(), SccpListener {
 
         val sccpMessage = object : SccpDataMessageImpl(
                 2560, ProtocolClassImpl(1, false),
-                message.sls, ssnApp,
+                message.sls, message.ssn,
                 SccpAddressFactory.create(message.gtCdpa, message.dpc),
                 SccpAddressFactory.create(message.gtCgpa, 0),
                 message.tcapPayload,
