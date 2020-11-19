@@ -35,6 +35,7 @@ import org.mobicents.protocols.ss7.m3ua.ExchangeType
 import org.mobicents.protocols.ss7.m3ua.Functionality
 import org.mobicents.protocols.ss7.m3ua.M3UAManagement
 import org.mobicents.protocols.ss7.m3ua.impl.M3UAManagementImpl
+import org.mobicents.protocols.ss7.m3ua.impl.parameter.ParameterFactoryImpl
 import org.mobicents.protocols.ss7.mtp.Mtp3PausePrimitive
 import org.mobicents.protocols.ss7.mtp.Mtp3ResumePrimitive
 import org.mobicents.protocols.ss7.mtp.Mtp3UserPart
@@ -122,9 +123,10 @@ class Socket : AbstractVerticle(), SccpListener {
                 stp as JsonObject
                 val lPort = stp.getInteger("lPort")
                 val rPc = stp.getInteger("rPC")
+                val rCtx = stp.getJsonArray("rCtx")?.map { it as Long }?.toLongArray()
 
                 m3ua.createAspFactory(ASP_NAME + "_$lPort", ASSOCIATION_NAME + "_$lPort", false)
-                m3ua.createAs(AS_NAME + "_$lPort", Functionality.AS, ExchangeType.SE, null, null, null, 1, null).apply {
+                m3ua.createAs(AS_NAME + "_$lPort", Functionality.AS, ExchangeType.SE, null, rCtx?.let { ParameterFactoryImpl().createRoutingContext(it) }, null, 1, null).apply {
                     // This patch will help AS to recover in case of blocked M3UA links
                     patchPeerFsm()
                 }
