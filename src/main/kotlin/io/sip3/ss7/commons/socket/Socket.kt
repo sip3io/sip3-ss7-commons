@@ -123,7 +123,7 @@ class Socket : AbstractVerticle(), SccpListener {
                 stp as JsonObject
                 val lPort = stp.getInteger("lPort")
                 val rPc = stp.getInteger("rPC")
-                val rCtx = stp.getJsonArray("rCtx")?.map { it as Long }?.toLongArray()
+                val rCtx = stp.getJsonArray("rCtx")?.map { it as Int }?.map { it.toLong() }?.toLongArray()
 
                 m3ua.createAspFactory(ASP_NAME + "_$lPort", ASSOCIATION_NAME + "_$lPort", false)
                 m3ua.createAs(AS_NAME + "_$lPort", Functionality.AS, ExchangeType.SE, null, rCtx?.let { ParameterFactoryImpl().createRoutingContext(it) }, null, 1, null).apply {
@@ -167,13 +167,19 @@ class Socket : AbstractVerticle(), SccpListener {
                 sccp.sccpResource.addRemoteSpc(lPort, rPc, 0, 0)
             }
             sccp.router.apply {
-                val sccpAddressVrt = config.getString("gtVrt")?.let { SccpAddressFactory.create(it, pcApp) }
-                config.getJsonArray("gtApp")
-                        .map { it as String }
-                        .map { SccpAddressFactory.create(it, pcApp) }
-                        .forEachIndexed { i, sccpAddressApp ->
-                            addRoutingAddress(i, sccpAddressApp)
-                            addRule(i, RuleType.SOLITARY, LoadSharingAlgorithm.Undefined, OriginationType.ALL, sccpAddressVrt, "K", i, -1, null, 0)
+                var i = 0
+                config.getJsonArray("ssnApp")
+                        .map { it as Int }
+                        .forEach { ssnApp ->
+                            val sccpAddressVrt = config.getString("gtVrt")?.let { SccpAddressFactory.create(it, pcApp, ssnApp) }
+                            config.getJsonArray("gtApp")
+                                    .map { it as String }
+                                    .map { SccpAddressFactory.create(it, pcApp, ssnApp) }
+                                    .forEach { sccpAddressApp ->
+                                        addRoutingAddress(i, sccpAddressApp)
+                                        addRule(i, RuleType.SOLITARY, LoadSharingAlgorithm.Undefined, OriginationType.ALL, sccpAddressVrt, "K", i, -1, null, 0)
+                                        i++
+                                    }
                         }
             }
 
@@ -187,8 +193,8 @@ class Socket : AbstractVerticle(), SccpListener {
 
             config.getJsonArray("ssnApp")
                     .map { it as Int }
-                    .forEach { ssn ->
-                        sccp.sccpProvider.registerSccpListener(ssn, this)
+                    .forEach { ssnApp ->
+                        sccp.sccpProvider.registerSccpListener(ssnApp, this)
                     }
         }
 
@@ -243,7 +249,7 @@ class Socket : AbstractVerticle(), SccpListener {
                 2560, ProtocolClassImpl(1, false),
                 message.sls, message.ssnCgpa,
                 SccpAddressFactory.create(message.gtCdpa, message.dpc, message.ssnCdpa),
-                SccpAddressFactory.create(message.gtCgpa, 0, message.ssnCgpa),
+                SccpAddressFactory.create(message.gtCgpa, message.opc, message.ssnCgpa),
                 message.tcapPayload,
                 null, null
         ) {}
