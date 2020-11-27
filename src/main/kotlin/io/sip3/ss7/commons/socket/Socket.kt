@@ -208,13 +208,17 @@ class Socket : AbstractVerticle(), SccpListener {
             sls = message.sls
             opc = message.incomingOpc
             dpc = message.incomingDpc
-            message.calledPartyAddress.let { cdpa ->
-                ssnCdpa = cdpa.subsystemNumber
-                gtCdpa = cdpa.globalTitle.digits
+            message.calledPartyAddress.let { calledPartyAddress ->
+                cdpa = SccpMessage.Address().apply {
+                    gt = calledPartyAddress.globalTitle.digits
+                    ssn = calledPartyAddress.subsystemNumber
+                }
             }
-            message.callingPartyAddress.let { cgpa ->
-                ssnCgpa = cgpa.subsystemNumber
-                gtCgpa = cgpa.globalTitle.digits
+            message.callingPartyAddress.let { callingPartyAddress ->
+                cgpa = SccpMessage.Address().apply {
+                    gt = callingPartyAddress.globalTitle.digits
+                    ssn = callingPartyAddress.subsystemNumber
+                }
             }
             tcapPayload = message.data
         }
@@ -247,9 +251,9 @@ class Socket : AbstractVerticle(), SccpListener {
 
         val sccpMessage = object : SccpDataMessageImpl(
                 2560, ProtocolClassImpl(1, false),
-                message.sls, message.ssnCgpa,
-                SccpAddressFactory.create(message.gtCdpa, message.dpc, message.ssnCdpa),
-                SccpAddressFactory.create(message.gtCgpa, message.opc, message.ssnCgpa),
+                message.sls, message.cgpa.ssn,
+                SccpAddressFactory.create(message.cdpa.gt, message.dpc, message.cdpa.ssn),
+                SccpAddressFactory.create(message.cgpa.gt, message.opc, message.cgpa.ssn),
                 message.tcapPayload,
                 null, null
         ) {}

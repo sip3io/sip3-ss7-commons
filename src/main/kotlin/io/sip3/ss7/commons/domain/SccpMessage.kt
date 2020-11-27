@@ -23,18 +23,36 @@ class SccpMessage {
     var dpc = 0
     var opc = 0
 
-    var ssnCdpa = 0
-    var ssnCgpa = 0
-
-    lateinit var gtCdpa: String
-    lateinit var gtCgpa: String
+    lateinit var cdpa: Address
+    lateinit var cgpa: Address
 
     lateinit var tcapPayload: ByteArray
     val tcapMessage: TcapMessage by lazy {
         TcapMessage(tcapPayload)
     }
 
+    fun echoResponseMessage(): SccpMessage {
+        val m = SccpMessage()
+        m.sls = sls
+        m.dpc = opc
+        m.opc = dpc
+        m.cdpa = cgpa
+        m.cgpa = cdpa
+        m.tcapPayload = tcapPayload
+        return m
+    }
+
     override fun toString(): String {
-        return "SccpMessage(sls=$sls, dpc=$dpc, opc=$opc, ssnCdpa=$ssnCdpa, ssnCgpa=$ssnCgpa, gtCdpa='$gtCdpa', gtCgpa='$gtCgpa', tcapMessage=$tcapMessage)"
+        return "SccpMessage(sls=$sls, dpc=$dpc, opc=$opc, cdpa=$cdpa, cgpa=$cgpa, tcapMessage=$tcapMessage)"
+    }
+
+    class Address {
+
+        lateinit var gt: String
+        var ssn = 146
+
+        override fun toString(): String {
+            return "Address(gt='$gt', ssn=$ssn)"
+        }
     }
 }
