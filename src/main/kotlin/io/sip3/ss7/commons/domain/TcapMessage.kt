@@ -96,7 +96,11 @@ class TcapMessage {
 
                     tbm.originatingTransactionId = Utils.encodeTransactionId(otid!!)
                     dialogPortion?.let { tbm.dialogPortion = it }
-                    components.let { tbm.component = it.toTypedArray() }
+                    components.let {
+                        if (components.isNotEmpty()) {
+                            tbm.component = it.toTypedArray()
+                        }
+                    }
 
                     tbm.encode(aos)
                 }
@@ -106,7 +110,11 @@ class TcapMessage {
                     tcm.originatingTransactionId = Utils.encodeTransactionId(otid!!)
                     tcm.destinationTransactionId = Utils.encodeTransactionId(dtid!!)
                     dialogPortion?.let { tcm.dialogPortion = it }
-                    components.let { tcm.component = it.toTypedArray() }
+                    components.let {
+                        if (components.isNotEmpty()) {
+                            tcm.component = it.toTypedArray()
+                        }
+                    }
 
                     tcm.encode(aos)
                 }
@@ -115,7 +123,11 @@ class TcapMessage {
 
                     tem.destinationTransactionId = Utils.encodeTransactionId(dtid!!)
                     dialogPortion?.let { tem.dialogPortion = it }
-                    components.let { tem.component = it.toTypedArray() }
+                    components.let {
+                        if (components.isNotEmpty()) {
+                            tem.component = it.toTypedArray()
+                        }
+                    }
 
                     tem.encode(aos)
                 }
