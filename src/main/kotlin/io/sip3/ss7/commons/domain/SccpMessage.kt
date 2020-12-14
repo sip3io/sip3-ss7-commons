@@ -31,7 +31,7 @@ class SccpMessage {
         TcapMessage(tcapPayload)
     }
 
-    fun echoResponseMessage(): SccpMessage {
+    fun createEchoResponse(): SccpMessage {
         val m = SccpMessage()
         m.sls = sls
         m.dpc = opc
