@@ -28,19 +28,19 @@ fun Asp.patchLocalFsm() {
     this as AspImpl
 
     val states = localFSM.javaClass
-            .getDeclaredField("states")
-            .apply {
-                isAccessible = true
-            }
-            .get(localFSM) as FastMap<String, FSMState>
+        .getDeclaredField("states")
+        .apply {
+            isAccessible = true
+        }
+        .get(localFSM) as FastMap<String, FSMState>
 
     states.get(AspState.ACTIVE_SENT.toString())?.setOnTimeOut({
         aspFactory.javaClass
-                .getDeclaredMethod("sendAspActive", AsImpl::class.java)
-                .apply {
-                    isAccessible = true
-                    invoke(aspFactory, `as`)
-                }
+            .getDeclaredMethod("sendAspActive", AsImpl::class.java)
+            .apply {
+                isAccessible = true
+                invoke(aspFactory, `as`)
+            }
     }, 2000)
 
     localFSM.createTransition(TransitionState.ASP_INACTIVE_ACK, AspState.ACTIVE.toString(), AspState.INACTIVE.toString())

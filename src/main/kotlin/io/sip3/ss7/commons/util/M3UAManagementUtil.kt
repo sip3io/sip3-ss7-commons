@@ -26,16 +26,16 @@ fun M3UAManagement.patchLinksetSelection() {
     isUseLsbForLinksetSelection = true
 
     val routeManagement = M3UARouteManagement::class.java
-            .getDeclaredConstructor(M3UAManagementImpl::class.java)
-            .apply {
-                isAccessible = true
-            }
-            .newInstance(this)
+        .getDeclaredConstructor(M3UAManagementImpl::class.java)
+        .apply {
+            isAccessible = true
+        }
+        .newInstance(this)
 
     M3UAManagementImpl::class.java
-            .getDeclaredField("routeManagement")
-            .apply {
-                isAccessible = true
-            }
-            .set(this, routeManagement)
+        .getDeclaredField("routeManagement")
+        .apply {
+            isAccessible = true
+        }
+        .set(this, routeManagement)
 }

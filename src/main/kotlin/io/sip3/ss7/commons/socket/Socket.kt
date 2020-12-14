@@ -126,7 +126,16 @@ class Socket : AbstractVerticle(), SccpListener {
                 val rCtx = stp.getJsonArray("rCtx")?.map { it as Int }?.map { it.toLong() }?.toLongArray()
 
                 m3ua.createAspFactory(ASP_NAME + "_$lPort", ASSOCIATION_NAME + "_$lPort", false)
-                m3ua.createAs(AS_NAME + "_$lPort", Functionality.AS, ExchangeType.SE, null, rCtx?.let { ParameterFactoryImpl().createRoutingContext(it) }, null, 1, null).apply {
+                m3ua.createAs(
+                    AS_NAME + "_$lPort",
+                    Functionality.AS,
+                    ExchangeType.SE,
+                    null,
+                    rCtx?.let { ParameterFactoryImpl().createRoutingContext(it) },
+                    null,
+                    1,
+                    null
+                ).apply {
                     // This patch will help AS to recover in case of blocked M3UA links
                     patchPeerFsm()
                 }
@@ -169,18 +178,18 @@ class Socket : AbstractVerticle(), SccpListener {
             sccp.router.apply {
                 var i = 0
                 config.getJsonArray("ssnApp")
-                        .map { it as Int }
-                        .forEach { ssnApp ->
-                            val sccpAddressVrt = config.getString("gtVrt")?.let { SccpAddressFactory.create(it, pcApp, ssnApp) }
-                            config.getJsonArray("gtApp")
-                                    .map { it as String }
-                                    .map { SccpAddressFactory.create(it, pcApp, ssnApp) }
-                                    .forEach { sccpAddressApp ->
-                                        addRoutingAddress(i, sccpAddressApp)
-                                        addRule(i, RuleType.SOLITARY, LoadSharingAlgorithm.Undefined, OriginationType.ALL, sccpAddressVrt, "K", i, -1, null, 0)
-                                        i++
-                                    }
-                        }
+                    .map { it as Int }
+                    .forEach { ssnApp ->
+                        val sccpAddressVrt = config.getString("gtVrt")?.let { SccpAddressFactory.create(it, pcApp, ssnApp) }
+                        config.getJsonArray("gtApp")
+                            .map { it as String }
+                            .map { SccpAddressFactory.create(it, pcApp, ssnApp) }
+                            .forEach { sccpAddressApp ->
+                                addRoutingAddress(i, sccpAddressApp)
+                                addRule(i, RuleType.SOLITARY, LoadSharingAlgorithm.Undefined, OriginationType.ALL, sccpAddressVrt, "K", i, -1, null, 0)
+                                i++
+                            }
+                    }
             }
 
             // Start ASP
@@ -192,10 +201,10 @@ class Socket : AbstractVerticle(), SccpListener {
             }
 
             config.getJsonArray("ssnApp")
-                    .map { it as Int }
-                    .forEach { ssnApp ->
-                        sccp.sccpProvider.registerSccpListener(ssnApp, this)
-                    }
+                .map { it as Int }
+                .forEach { ssnApp ->
+                    sccp.sccpProvider.registerSccpListener(ssnApp, this)
+                }
         }
 
         logger.info { "Stack configuration checked" }
@@ -250,12 +259,12 @@ class Socket : AbstractVerticle(), SccpListener {
         sccpMessagesSent.increment()
 
         val sccpMessage = object : SccpDataMessageImpl(
-                2560, ProtocolClassImpl(1, false),
-                message.sls, message.cgpa.ssn,
-                SccpAddressFactory.create(message.cdpa.gt, message.dpc, message.cdpa.ssn),
-                SccpAddressFactory.create(message.cgpa.gt, message.opc, message.cgpa.ssn),
-                message.tcapPayload,
-                null, null
+            2560, ProtocolClassImpl(1, false),
+            message.sls, message.cgpa.ssn,
+            SccpAddressFactory.create(message.cdpa.gt, message.dpc, message.cdpa.ssn),
+            SccpAddressFactory.create(message.cgpa.gt, message.opc, message.cgpa.ssn),
+            message.tcapPayload,
+            null, null
         ) {}
 
         sccp.sccpProvider.send(sccpMessage)

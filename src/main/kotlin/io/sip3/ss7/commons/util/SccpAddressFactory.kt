@@ -31,18 +31,18 @@ object SccpAddressFactory {
         val encodingScheme = if (number.length % 2 == 0) BCDEvenEncodingScheme.INSTANCE else BCDOddEncodingScheme.INSTANCE
 
         val gt = GlobalTitle0100Impl(
-                number,
-                0,
-                encodingScheme,
-                NumberingPlan.ISDN_TELEPHONY,
-                NatureOfAddress.INTERNATIONAL
+            number,
+            0,
+            encodingScheme,
+            NumberingPlan.ISDN_TELEPHONY,
+            NatureOfAddress.INTERNATIONAL
         )
 
         return SccpAddressImpl(
-                RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE,
-                gt,
-                pc,
-                ssn
+            RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE,
+            gt,
+            pc,
+            ssn
         )
     }
 }
