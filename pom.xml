@@ -11,7 +11,7 @@
     <parent>
         <groupId>io.sip3</groupId>
         <artifactId>sip3-parent</artifactId>
-        <version>2020.2.1</version>
+        <version>2021.1.1</version>
     </parent>
 
     <properties>
@@ -24,7 +24,7 @@
         <dependency>
             <groupId>io.sip3.commons</groupId>
             <artifactId>sip3-commons</artifactId>
-            <version>2020.2.1</version>
+            <version>2021.1.1</version>
         </dependency>
 
         <!-- SS7 -->

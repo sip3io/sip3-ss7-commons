@@ -18,7 +18,7 @@ package io.sip3.ss7.commons.socket
 
 import io.sip3.commons.micrometer.Metrics
 import io.sip3.commons.vertx.annotations.Instance
-import io.sip3.commons.vertx.util.localRequest
+import io.sip3.commons.vertx.util.localSend
 import io.sip3.ss7.commons.Routes
 import io.sip3.ss7.commons.domain.SccpMessage
 import io.sip3.ss7.commons.util.SccpAddressFactory
@@ -232,7 +232,7 @@ class Socket : AbstractVerticle(), SccpListener {
             tcapPayload = message.data
         }
 
-        vertx.eventBus().localRequest<Any>(Routes.handle, m)
+        vertx.eventBus().localSend(Routes.handle, m)
     }
 
     override fun onNotice(message: SccpNoticeMessage) {
